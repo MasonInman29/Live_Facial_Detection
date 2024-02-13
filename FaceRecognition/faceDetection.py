@@ -9,13 +9,31 @@ def detect_bounding_box(frame):
         #scaleFactor = 10% image size reduction
         #minNeighbors prevents false positives, eg.1 or 2 will have many false positives
         #minSize - minmimum size of a face to return
-    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(30, 30))
-    i = 1
+    faces = face_classifier.detectMultiScale(gray_image, 1.1, 5, minSize=(40, 40))
+    numFaces = 1
     for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
-        cv2.putText(frame, 'Face: ' + str(i), (x, y - 10), cv2.FONT_HERSHEY_COMPLEX_SMALL, 0.9, (0, 255, 0), 2)
-        i += 1
-        
+        #testing frame
+        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
+        cv2.putText(frame, 'Face: ' + str(numFaces), (x, y - 10), cv2.FONT_HERSHEY_PLAIN, 0.9, (0, 255, 0), 2)
+        numFaces += 1
+        radius = int(((h+w) / 2) / 1.9)
+        #yellow face
+        cv2.circle(frame, (x + int(w/2), y + int(h/2)), radius, (50, 200, 255), -1)
+        #eyes
+        cv2.circle(frame, (x + int(w * .25), y + int(h * .33)), int(radius / 4), (50, 50, 50), -1)
+        cv2.circle(frame, (x + int(w * .75), y + int(h * .33)), int(radius / 4), (50, 50, 50), -1)
+
+        # Mouth
+        center_x = x + int(w / 2)
+        center_y = y + int(h * 0.6)
+        axes_length = int(w * 0.25)
+        start_angle = 0
+        end_angle = 180
+        color = (50, 50, 50) 
+        thickness = 5
+        cv2.ellipse(frame, (center_x, center_y), (axes_length, int(axes_length * 0.5)), 0, start_angle, end_angle, color, thickness)
+       
+    cv2.putText(frame, "Total Faces: " + str(numFaces-1), (20,20), cv2.FONT_HERSHEY_PLAIN,1.1,(0,255,0),2)
     return faces
 
 
